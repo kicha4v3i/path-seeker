@@ -31,7 +31,9 @@ import {
 import {
   CHART_VIEW_CAMERAS,
   animateSceneCamera,
+  readSceneCamera,
   type ChartViewAlignment,
+  type SceneCamera,
 } from '@/lib/chartViewCameras'
 import { densifySurveyPath } from '@/lib/surveyPath'
 import { Input } from '@/components/ui/input'
@@ -134,6 +136,9 @@ export function SurfaceLocationChart({
   const [hoveredStation, setHoveredStation] = useState<SurveyStation | null>(null)
   const graphDivRef = useRef<HTMLElement | null>(null)
   const cancelCameraAnimationRef = useRef<(() => void) | null>(null)
+  // Remembers the camera angle the user last set (by rotating or picking a
+  // preset view) so it survives data reloads and unit-system changes.
+  const userCameraRef = useRef<SceneCamera | null>(null)
   const plotReadyRef = useRef(false)
   const viewAlignmentRef = useRef(viewAlignment)
   const pathStationsRef = useRef<SurveyStation[]>([])
@@ -324,6 +329,7 @@ export function SurfaceLocationChart({
           uirevision: cameraUirevision,
           scene: {
             uirevision: cameraUirevision,
+            ...(userCameraRef.current ? { camera: userCameraRef.current } : {}),
             xaxis: { title: { text: `East (${u})` }, showgrid: true, zeroline: true, range: [minX, maxX] },
             yaxis: { title: { text: `North (${u})` }, showgrid: true, zeroline: true, range: [minY, maxY] },
             zaxis: tvdZAxis(maxZ, u, unitSystem),
@@ -411,6 +417,7 @@ export function SurfaceLocationChart({
         uirevision: cameraUirevision,
         scene: {
           uirevision: cameraUirevision,
+          ...(userCameraRef.current ? { camera: userCameraRef.current } : {}),
           xaxis: { title: { text: 'Easting (m)' }, showgrid: true, zeroline: true, range: [minX, maxX] },
           yaxis: { title: { text: 'Northing (m)' }, showgrid: true, zeroline: true, range: [minY, maxY] },
           zaxis: tvdZAxis(maxZ, u, unitSystem),
@@ -420,6 +427,15 @@ export function SurfaceLocationChart({
       },
     }
   }, [well, wellId, targets, mode, unitSystem, kop, u, pathStations])
+
+  function handlePlotRelayout() {
+    const graphDiv = graphDivRef.current
+    if (!graphDiv) return
+    // Any time the view changes (user drag/rotate, zoom, or preset animation),
+    // remember where the camera ended up so we can restore it after a rebuild.
+    const camera = readSceneCamera(graphDiv)
+    if (camera) userCameraRef.current = camera
+  }
 
   function handlePlotHover(event: Readonly<{ points?: readonly Record<string, unknown>[] }>) {
     const point = event.points?.[0]
@@ -621,6 +637,7 @@ export function SurfaceLocationChart({
               config={{ displayModeBar: false, responsive: true }}
               onHover={handlePlotHover}
               onUnhover={handlePlotUnhover}
+              onRelayout={handlePlotRelayout}
               onInitialized={(_figure: unknown, graphDiv: HTMLElement) => {
                 graphDivRef.current = graphDiv
                 plotReadyRef.current = true

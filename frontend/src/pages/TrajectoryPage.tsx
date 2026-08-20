@@ -89,23 +89,6 @@ export function TrajectoryPage() {
   }, [wellId, location.pathname, loadPageData])
 
   useEffect(() => {
-    if (!wellId) return
-
-    const refreshIfVisible = () => {
-      if (document.visibilityState === 'visible') {
-        void loadPageData()
-      }
-    }
-
-    window.addEventListener('focus', refreshIfVisible)
-    document.addEventListener('visibilitychange', refreshIfVisible)
-    return () => {
-      window.removeEventListener('focus', refreshIfVisible)
-      document.removeEventListener('visibilitychange', refreshIfVisible)
-    }
-  }, [wellId, loadPageData])
-
-  useEffect(() => {
     if (!projectId) return
     api.get<Project>(`/projects/${projectId}`).then(setProject)
   }, [projectId])

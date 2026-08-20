@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-hover: hsl(var(--primary-hover));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-surface: hsl(var(--card));
+  --color-text: hsl(var(--foreground));
+  --color-text-muted: hsl(var(--muted-foreground));
+  --color-text-heading: hsl(var(--foreground));
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Brand: primary HSL 168 70% 22, bg 0 0% 96, border 207 15% 46 */
+  --background: 0 0% 96%;
+  --foreground: 0 0% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 15%;
+  --primary: 168 70% 22%;
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 168 70% 18%;
+  --secondary: 168 20% 94%;
+  --secondary-foreground: 168 70% 18%;
+  --muted: 0 0% 93%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 168 25% 92%;
+  --accent-foreground: 168 70% 18%;
+  --destructive: 0 72% 51%;
+  --border: 207 15% 82%;
+  --input: 207 15% 82%;
+  --ring: 168 70% 22%;
+  --app-header-height: 4.625rem;
+
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  line-height: 1.5;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+* {
+  box-sizing: border-box;
+  border-color: hsl(var(--border));
+}
+
+/* Map leader line + action box animations */
+.map-leader-line {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  opacity: 0.9;
+}
+
+.map-leader-line--active {
+  animation: map-draw-line 0.55s ease-out forwards;
+}
+
+@keyframes map-draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.map-action-box {
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+}
+
+.map-action-box--visible {
+  animation: map-box-in 0.35s ease-out 0.35s forwards;
+}
+
+@keyframes map-box-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.map-pin-pulse {
+  transform-origin: center;
+  animation: map-pin-pulse 1.2s ease-out infinite;
+}
+
+@keyframes map-pin-pulse {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
